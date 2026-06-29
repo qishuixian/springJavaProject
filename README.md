@@ -39,7 +39,7 @@
 | Day | 任务 | 产出 |
 |-----|------|------|
 | Day 1 | 安装 JDK 17 + IntelliJ IDEA Community + Maven | 控制台运行 Hello World |
-| Day 2 | 使用 Spring Initializr 生成项目（Spring Web + Lombok） | 项目启动成功，访问 http://localhost:8080 |
+| Day 2 | 使用 Spring Initializr 生成项目（Spring Web + Lombok） | 项目启动成功，访问 http://localhost:8085 |
 | Day 3 | 编写第一个 Controller：`GET /api/books` 返回静态列表 | 接口返回 JSON 数据 |
 | Day 4 | 理解核心注解：`@RestController`、`@GetMapping`、`@RequestMapping` | 注解使用文档 |
 | Day 5 | 创建 Book 实体类（id, title, author, status） | Book.java 实体类 |
