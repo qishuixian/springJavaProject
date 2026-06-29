@@ -44,7 +44,7 @@
 | Day 4 | 理解核心注解：`@RestController`、`@GetMapping`、`@RequestMapping` | 注解使用文档 |
 | Day 5 | 创建 Book 实体类（id, title, author, status） | Book.java 实体类 |
 | Day 6 | 配置 MySQL 数据库（application.yml），创建 book 表 | 数据库连接成功 |
-| Day 7 | 复习总结 | 博客：《Spring Boot 第一周：从0到第一个REST API》 |
+| Day 7 | 复习总结 | 博客：[《Spring Boot 第一周：从0到第一个REST API》](https://blog.csdn.net/qishuixian/article/details/162412146) |
 
 **核心知识点**：
 - Spring Boot 项目结构
