@@ -66,7 +66,7 @@
 | Day 4 | 理解 `@Service`、`@Repository`、依赖注入（DI） | 架构理解文档 |
 | Day 5 | 引入 DTO：BookRequest, BookResponse | DTO 层完成 |
 | Day 6 | 统一返回格式 `Result<T>`（code, message, data） | 统一响应结构 |
-| Day 7 | 复习总结 | 博客：《Spring Boot CRUD 与三层架构实战》 |
+| Day 7 | 复习总结 | 博客：[《Spring Boot 第二周：Spring Boot CRUD 与三层架构实战》](https://blog.csdn.net/qishuixian/article/details/162522152) |
 
 **核心知识点**：
 - 三层架构（Controller-Service-Repository）
