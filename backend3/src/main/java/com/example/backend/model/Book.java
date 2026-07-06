@@ -2,7 +2,13 @@ package com.example.backend.model;
 import jakarta.persistence.*;
 
 @Entity   // 标记这个类是一个数据库实体
-@Table(name = "books")  //指定对应的数据库表名为 books
+//指定对应的数据库表名为 books
+@Table(name = "books", indexes = {
+        @Index(name = "idx_title", columnList = "title"),
+        @Index(name = "idx_author", columnList = "author"),
+        @Index(name = "idx_status", columnList = "status"),
+        @Index(name = "idx_category_status", columnList = "category_id, status")
+})
 // 这个 Book类就是一个“数据容器”，用来存放一本书的信息（编号、书名、作者）。后面你会用 List 装好几个 Book 对象返回给前端。
 public class Book {
     @Id   //标记 id字段是主键

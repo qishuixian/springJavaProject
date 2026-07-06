@@ -1,4 +1,6 @@
 package com.example.backend.dto;
 
-public class BookTitleAuthorProjection {
+public interface BookTitleAuthorProjection {
+    String getTitle();
+    String getAuthor();
 }
