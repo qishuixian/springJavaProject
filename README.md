@@ -88,7 +88,7 @@
 | Day 4 | 学习 MySQL 索引，给常用字段添加索引 | 索引优化文档 |
 | Day 5 | 全局异常处理 `@ControllerAdvice` | 统一异常处理器 |
 | Day 6 | 参数校验 `@Valid` + 自定义校验注解 | 参数校验完成 |
-| Day 7 | 复习总结 | 博客：《Spring Boot 数据库关联与异常处理实践》 |
+| Day 7 | 复习总结 | 博客：[《Spring Boot 第三周：Spring Boot 数据库关联与异常处理实践》](https://blog.csdn.net/qishuixian/article/details/162654661) |
 
 **核心知识点**：
 - JPA 关联关系（@ManyToOne, @OneToMany）
