@@ -36,6 +36,24 @@ export const getBooks = (params) => {
   })
 }
 
+// 分页获取图书列表
+export const getBooksByPage = (params) => {
+  return request({
+    url: '/books/page',
+    method: 'get',
+    params
+  })
+}
+
+// 分页搜索图书
+export const searchBooksByPage = (params) => {
+  return request({
+    url: '/books/page/search',
+    method: 'get',
+    params
+  })
+}
+
 // 获取图书详情
 export const getBookById = (id) => {
   return request({

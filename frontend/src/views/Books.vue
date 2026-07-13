@@ -11,11 +11,33 @@
         </div>
       </template>
 
-      <el-table :data="books" border style="width: 100%">
+      <!-- 搜索栏 -->
+      <div class="search-bar">
+        <el-input
+          v-model="searchKeyword"
+          placeholder="请输入书名关键字"
+          clearable
+          style="width: 300px"
+          @clear="handleSearch"
+          @keyup.enter="handleSearch"
+        />
+        <el-button type="primary" @click="handleSearch">搜索</el-button>
+        <el-button @click="resetSearch">重置</el-button>
+      </div>
+
+      <!-- 图书表格 -->
+      <el-table :data="books" border style="width: 100%" v-loading="loading">
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="title" label="书名" />
         <el-table-column prop="author" label="作者" />
-        <el-table-column prop="status" label="状态" />
+        <el-table-column prop="categoryName" label="分类" />
+        <el-table-column prop="status" label="状态">
+          <template #default="{ row }">
+            <el-tag :type="row.status === '可借阅' ? 'success' : 'warning'">
+              {{ row.status }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="180">
           <template #default="{ row }">
             <el-button size="small" @click="showEditDialog(row)">编辑</el-button>
@@ -23,6 +45,20 @@
           </template>
         </el-table-column>
       </el-table>
+
+      <!-- 分页组件 -->
+      <div class="pagination-container">
+        <el-pagination
+          v-model:current-page="pagination.currentPage"
+          v-model:page-size="pagination.pageSize"
+          :page-sizes="[5, 10, 20, 50]"
+          :total="pagination.total"
+          layout="total, sizes, prev, pager, next, jumper"
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
     </el-card>
 
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px">
@@ -35,8 +71,8 @@
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-select v-model="bookForm.status" placeholder="请选择状态">
-            <el-option label="可借阅" value="AVAILABLE" />
-            <el-option label="已借出" value="BORROWED" />
+            <el-option label="可借阅" value="可借阅" />
+            <el-option label="已借出" value="已借出" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -51,19 +87,34 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { getBooks, createBook, updateBook, deleteBook } from '../api'
+import {
+  getBooksByPage,
+  searchBooksByPage,
+  createBook,
+  updateBook,
+  deleteBook
+} from '../api'
 import { removeToken } from '../utils'
 
 const books = ref([])
+const loading = ref(false)
 const dialogVisible = ref(false)
 const dialogTitle = ref('新增图书')
 const bookFormRef = ref(null)
 const currentBookId = ref(null)
+const searchKeyword = ref('')
+
+// 分页参数（前端页码从 1 开始，后端从 0 开始）
+const pagination = reactive({
+  currentPage: 1,
+  pageSize: 5,
+  total: 0
+})
 
 const bookForm = reactive({
   title: '',
   author: '',
-  status: 'AVAILABLE'
+  status: '可借阅'
 })
 
 const bookRules = {
@@ -72,21 +123,65 @@ const bookRules = {
   status: [{ required: true, message: '请选择状态', trigger: 'change' }]
 }
 
+// 获取图书列表（分页）
 const fetchBooks = async () => {
+  loading.value = true
   try {
-    const res = await getBooks()
+    const params = {
+      page: pagination.currentPage - 1, // 后端从 0 开始
+      size: pagination.pageSize,
+      sortField: 'id',
+      sortDirection: 'asc'
+    }
+
+    const apiFunc = searchKeyword.value ? searchBooksByPage : getBooksByPage
+    if (searchKeyword.value) {
+      params.keyword = searchKeyword.value
+    }
+
+    const res = await apiFunc(params)
     if (res.code === 200) {
-      books.value = res.data
+      books.value = res.data.content
+      pagination.total = res.data.totalElements
     }
   } catch (error) {
     console.error('获取图书列表失败:', error)
+    ElMessage.error('获取图书列表失败')
+  } finally {
+    loading.value = false
   }
+}
+
+// 搜索
+const handleSearch = () => {
+  pagination.currentPage = 1
+  fetchBooks()
+}
+
+// 重置搜索
+const resetSearch = () => {
+  searchKeyword.value = ''
+  pagination.currentPage = 1
+  fetchBooks()
+}
+
+// 每页条数变化
+const handleSizeChange = (size) => {
+  pagination.pageSize = size
+  pagination.currentPage = 1
+  fetchBooks()
+}
+
+// 当前页变化
+const handleCurrentChange = (page) => {
+  pagination.currentPage = page
+  fetchBooks()
 }
 
 const showAddDialog = () => {
   dialogTitle.value = '新增图书'
   currentBookId.value = null
-  Object.assign(bookForm, { title: '', author: '', status: 'AVAILABLE' })
+  Object.assign(bookForm, { title: '', author: '', status: '可借阅' })
   dialogVisible.value = true
 }
 
@@ -127,6 +222,10 @@ const handleDelete = async (id) => {
     const res = await deleteBook(id)
     if (res.code === 200) {
       ElMessage.success('删除成功')
+      // 若删除后当前页无数据且不是第一页，则回退一页
+      if (books.value.length === 1 && pagination.currentPage > 1) {
+        pagination.currentPage--
+      }
       fetchBooks()
     } else {
       ElMessage.error(res.message || '删除失败')
@@ -161,5 +260,17 @@ onMounted(() => {
 
 .card-header h2 {
   margin: 0;
+}
+
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
 }
 </style>
