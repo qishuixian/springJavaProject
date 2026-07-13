@@ -111,7 +111,7 @@
 | Day 4 | 编写 JWT 工具类（生成 + 解析） | JwtUtil.java |
 | Day 5 | 编写 JWT 过滤器，保护需要登录的接口 | JwtAuthenticationFilter |
 | Day 6 | 前端 Vue3 + Vite 项目初始化，安装 axios | 前端项目结构 |
-| Day 7 | 复习总结 | 博客：《Spring Boot + JWT 鉴权实战》 |
+| Day 7 | 复习总结| 博客：[《Spring Boot 第四周：集成 Spring Security 与 JWT 鉴权践》](https://blog.csdn.net/qishuixian/article/details/162654661) |
 
 **核心知识点**：
 - Spring Security 基础
