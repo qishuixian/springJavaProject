@@ -6,20 +6,27 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 // 标记为配置类
 @Configuration
 //启用 Spring Security 的 Web 安全支持
 @EnableWebSecurity
+// 启用方法安全（@PreAuthorize 等注解）,允许我们在 Controller 的方法上使用 @PreAuthorize、@PostAuthorize等注解进行细粒度权限控制
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
+
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;  // 注入 JWT 过滤器
 
     //密码编码器，用于加密和验证密码
     @Bean
@@ -55,7 +62,9 @@ public class SecurityConfig {
                 )
 
                 // 设置自定义 UserDetailsService
-                .userDetailsService(customUserDetailsService);
+                .userDetailsService(customUserDetailsService)
+                // ★ 在 UsernamePasswordAuthenticationFilter 之前添加 JWT 过滤器
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
