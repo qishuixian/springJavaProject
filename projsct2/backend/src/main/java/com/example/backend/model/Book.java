@@ -1,6 +1,8 @@
 package com.example.backend.model;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity   // 标记这个类是一个数据库实体
 //指定对应的数据库表名为 books
 @Table(name = "books", indexes = {
@@ -27,6 +29,32 @@ public class Book {
     @ManyToOne(fetch = FetchType.LAZY)  // ManyToOne:多对一关系（多本书属于一个分类）,FetchType.LAZY:懒加载，查询 Book 时不立即加载 Category，需要时才查（性能优化）
     @JoinColumn(name = "category_id")   // 指定外键字段名为 category_id
     private Category category;
+
+    // 封面图片路径
+    @Column
+    private String coverImage;
+
+    // 创建时间
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    // 更新时间
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    // 保存前自动填充：创建时间和更新时间都设为当前时间
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
+
+    // 更新前自动填充：只更新 updatedAt
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
     // 无参构造方法（Spring 反序列化时需要）
     public Book() {
@@ -87,5 +115,29 @@ public class Book {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public String getCoverImage() {
+        return coverImage;
+    }
+
+    public void setCoverImage(String coverImage) {
+        this.coverImage = coverImage;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

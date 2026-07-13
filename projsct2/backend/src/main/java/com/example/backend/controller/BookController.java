@@ -125,14 +125,15 @@ public class BookController {
         return Result.success(bookService.findAllByOrderBIdAsc());
     }
 
-    // GET /api/books/page?page=0&size=5&sortField=title&sortDirection=asc
+    // GET /api/books/page?page=0&size=5&sortField=updatedAt&sortDirection=desc
+    // 默认按更新时间倒序排列（最新的在最前面）
     @GetMapping("/books/page")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public Result<PageResponse<BookResponse>> getAllBooksWithPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "id") String sortField,
-            @RequestParam(defaultValue = "asc") String sortDirection) {
+            @RequestParam(defaultValue = "updatedAt") String sortField,
+            @RequestParam(defaultValue = "desc") String sortDirection) {
         PageResponse<BookResponse> pageResult = bookService.findAllWithPage(page, size, sortField, sortDirection);
         return Result.success(pageResult);
     }

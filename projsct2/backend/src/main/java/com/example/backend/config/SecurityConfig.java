@@ -64,7 +64,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/me").authenticated()
                         // 2. 放行注册和登录接口
                         .requestMatchers("/api/auth/**").permitAll()
-                        // 3. 其他所有请求都需要认证
+                        // 3. 放行上传的静态资源（图片访问）
+                        .requestMatchers("/uploads/**").permitAll()
+                        // 4. 其他所有请求都需要认证
                         .anyRequest().authenticated()
                 )
 

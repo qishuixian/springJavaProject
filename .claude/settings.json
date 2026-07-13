@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(New-Item -ItemType File -Path frontend/README.md -Force)",
+      "Bash(curl -s https://api.github.com/repos/qishuixian/springJavaProject/contents/frontend)",
+      "PowerShell(npm list axios)"
+    ]
+  }
+}

@@ -20,6 +20,7 @@ public class BookRequest {
     private String author;
     private String status;
     private Long categoryId;
+    private String coverImage;  // 封面图片路径
      // 注意:请求对象中没有 id字段，因为新增时 ID 由数据库自动生成，前端不需要传。
     // Getter 和 Setter
     public Long getId() {
@@ -57,4 +58,8 @@ public class BookRequest {
     public Long getCategoryId() { return categoryId; }
 
     public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
+
+    public String getCoverImage() { return coverImage; }
+
+    public void setCoverImage(String coverImage) { this.coverImage = coverImage; }
 }

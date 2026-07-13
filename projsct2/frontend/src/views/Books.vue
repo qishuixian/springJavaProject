@@ -27,16 +27,30 @@
       <!-- 图书表格 -->
       <el-table :data="books" border style="width: 100%" v-loading="loading">
         <el-table-column prop="id" label="ID" width="80" />
+        <el-table-column label="封面" width="100">
+          <template #default="{ row }">
+            <el-image
+              v-if="row.coverImage"
+              :src="baseUrl + row.coverImage"
+              style="width: 60px; height: 80px; cursor: pointer"
+              fit="cover"
+              @click="openPreview(baseUrl + row.coverImage)"
+            />
+            <span v-else style="color: #c0c4cc; font-size: 12px">暂无封面</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="title" label="书名" />
         <el-table-column prop="author" label="作者" />
         <el-table-column prop="categoryName" label="分类" />
-        <el-table-column prop="status" label="状态">
+        <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="row.status === '可借阅' ? 'success' : 'warning'">
               {{ row.status }}
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="createdAt" label="创建时间" width="170" />
+        <el-table-column prop="updatedAt" label="编辑时间" width="170" />
         <el-table-column v-if="isAdmin" label="操作" width="180">
           <template #default="{ row }">
             <el-button size="small" @click="showEditDialog(row)">编辑</el-button>
@@ -84,11 +98,33 @@
             <el-option label="已借出" value="已借出" />
           </el-select>
         </el-form-item>
+        <el-form-item label="封面">
+          <el-upload
+            class="cover-uploader"
+            :show-file-list="false"
+            :before-upload="beforeCoverUpload"
+            :http-request="handleCoverUpload"
+          >
+            <el-image
+              v-if="bookForm.coverImage"
+              :src="baseUrl + bookForm.coverImage"
+              style="width: 100px; height: 130px"
+              fit="cover"
+            />
+            <el-icon v-else class="cover-uploader-icon"><Plus /></el-icon>
+          </el-upload>
+          <div class="upload-tip">支持 jpg/png 格式，不超过 5MB</div>
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
         <el-button type="primary" @click="handleSave">确定</el-button>
       </template>
+    </el-dialog>
+
+    <!-- 图片预览弹窗 -->
+    <el-dialog v-model="previewVisible" title="封面预览" width="400px">
+      <img :src="previewImage" style="width: 100%" />
     </el-dialog>
   </div>
 </template>
@@ -96,20 +132,27 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
 import {
   getBooksByPage,
   searchBooksByPage,
   createBook,
   updateBook,
   deleteBook,
-  getCategories
+  getCategories,
+  uploadCover
 } from '../api'
 import { getUserInfo } from '../utils'
 
 const isAdmin = computed(() => getUserInfo()?.role === 'ADMIN')
 
+// 后端基础地址（用于拼接图片 URL）
+const baseUrl = 'http://localhost:8085'
+
 const books = ref([])
 const categories = ref([])
+const previewImage = ref('')
+const previewVisible = ref(false)
 const loading = ref(false)
 const dialogVisible = ref(false)
 const dialogTitle = ref('新增图书')
@@ -128,7 +171,8 @@ const bookForm = reactive({
   title: '',
   author: '',
   categoryId: null,
-  status: '可借阅'
+  status: '可借阅',
+  coverImage: ''
 })
 
 const bookRules = {
@@ -144,9 +188,8 @@ const fetchBooks = async () => {
   try {
     const params = {
       page: pagination.currentPage - 1, // 后端从 0 开始
-      size: pagination.pageSize,
-      sortField: 'id',
-      sortDirection: 'asc'
+      size: pagination.pageSize
+      // 排序由后端默认：按更新时间倒序
     }
 
     const apiFunc = searchKeyword.value ? searchBooksByPage : getBooksByPage
@@ -212,7 +255,7 @@ const fetchCategories = async () => {
 const showAddDialog = () => {
   dialogTitle.value = '新增图书'
   currentBookId.value = null
-  Object.assign(bookForm, { title: '', author: '', categoryId: null, status: '可借阅' })
+  Object.assign(bookForm, { title: '', author: '', categoryId: null, status: '可借阅', coverImage: '' })
   dialogVisible.value = true
 }
 
@@ -223,7 +266,8 @@ const showEditDialog = (row) => {
     title: row.title,
     author: row.author,
     categoryId: row.categoryId || null,
-    status: row.status
+    status: row.status,
+    coverImage: row.coverImage || ''
   })
   dialogVisible.value = true
 }
@@ -280,6 +324,42 @@ const handleDelete = async (id) => {
   }
 }
 
+// 上传前校验（文件类型和大小）
+const beforeCoverUpload = (file) => {
+  const isImage = file.type === 'image/jpeg' || file.type === 'image/png'
+  const isLt5M = file.size / 1024 / 1024 < 5
+  if (!isImage) {
+    ElMessage.error('只允许上传 JPG/PNG 格式的图片')
+    return false
+  }
+  if (!isLt5M) {
+    ElMessage.error('图片大小不能超过 5MB')
+    return false
+  }
+  return true
+}
+
+// 自定义上传封面图片
+const handleCoverUpload = async ({ file }) => {
+  try {
+    const res = await uploadCover(file)
+    if (res.code === 200) {
+      bookForm.coverImage = res.data
+      ElMessage.success('封面上传成功')
+    } else {
+      ElMessage.error(res.message || '上传失败')
+    }
+  } catch (error) {
+    ElMessage.error('上传失败')
+  }
+}
+
+// 打开图片预览
+const openPreview = (url) => {
+  previewImage.value = url
+  previewVisible.value = true
+}
+
 onMounted(() => {
   fetchCategories()
   fetchBooks()
@@ -311,5 +391,32 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
+}
+
+.cover-uploader {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  width: 100px;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.cover-uploader:hover {
+  border-color: #409eff;
+}
+
+.cover-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+}
+
+.upload-tip {
+  font-size: 12px;
+  color: #909399;
+  margin-top: 5px;
 }
 </style>

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,10 +34,10 @@ public class BookService {
 
     @Autowired
     private CategoryRepository categoryRepository;
-    // 查询所有书籍
+    // 查询所有书籍（按更新时间倒序）
     public List<BookResponse> findAll() {
-        // 1. 从数据库查出所有 Book 实体
-        List<Book> books = bookRepository.findAll(); // 查询所有 Book 实体，然后用 stream().map()逐个转换成 BookResponse
+        // 1. 按 updatedAt 字段倒序查询所有 Book 实体
+        List<Book> books = bookRepository.findAll(Sort.by(Sort.Direction.DESC, "updatedAt"));
         // 2. 把每个 Book 实体转换成 BookResponse
         return books.stream()
                 .map(this::convertToResponse)
@@ -65,6 +66,8 @@ public class BookService {
             Category category = categoryRepository.findById(request.getCategoryId()).orElse(null);
             book.setCategory(category);
         }
+        // 设置封面图片
+        book.setCoverImage(request.getCoverImage());
 
         // 2. 保存到数据库
         Book saved = bookRepository.save(book);
@@ -89,6 +92,18 @@ public class BookService {
             if (request.getCategoryId() != null) {
                 Category category = categoryRepository.findById(request.getCategoryId()).orElse(null);
                 existing.setCategory(category);
+            }
+
+            // 更新封面图片
+            if (request.getCoverImage() != null) {
+                existing.setCoverImage(request.getCoverImage());
+            }
+
+            // 更新时间：编辑时设置编辑时间，旧数据没有创建时间的也补上
+            LocalDateTime now = LocalDateTime.now();
+            existing.setUpdatedAt(now);
+            if (existing.getCreatedAt() == null) {
+                existing.setCreatedAt(now);
             }
 
             // 3. 保存到数据库
@@ -231,7 +246,10 @@ public class BookService {
                 book.getAuthor(),
                 book.getStatus(),
                 categoryId,
-                categoryName
+                categoryName,
+                book.getCoverImage(),
+                book.getCreatedAt(),
+                book.getUpdatedAt()
         );
     }
     // 统计所有书籍总数
