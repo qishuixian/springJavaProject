@@ -9,13 +9,6 @@
         </div>
       </div>
       <div class="header-right">
-        <el-input
-          v-model="searchText"
-          placeholder="搜索..."
-          prefix-icon="Search"
-          style="width: 200px; margin-right: 20px"
-          size="small"
-        />
         <el-dropdown @command="handleCommand">
           <span class="user-info">
             <el-avatar :size="32" style="background: #409eff">
@@ -85,7 +78,6 @@ const router = useRouter()
 const route = useRoute()
 
 const isCollapsed = ref(false)
-const searchText = ref('')
 const userInfo = ref(getUserInfo())
 
 const activeMenu = computed(() => route.path)

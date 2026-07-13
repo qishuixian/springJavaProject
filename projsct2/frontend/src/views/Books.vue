@@ -5,7 +5,7 @@
         <div class="card-header">
           <h2>图书管理</h2>
           <div>
-            <el-button type="primary" @click="showAddDialog">新增图书</el-button>
+            <el-button v-if="isAdmin" type="primary" @click="showAddDialog">新增图书</el-button>
           </div>
         </div>
       </template>
@@ -37,7 +37,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180">
+        <el-table-column v-if="isAdmin" label="操作" width="180">
           <template #default="{ row }">
             <el-button size="small" @click="showEditDialog(row)">编辑</el-button>
             <el-button size="small" type="danger" @click="handleDelete(row.id)">删除</el-button>
@@ -94,7 +94,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   getBooksByPage,
@@ -104,6 +104,9 @@ import {
   deleteBook,
   getCategories
 } from '../api'
+import { getUserInfo } from '../utils'
+
+const isAdmin = computed(() => getUserInfo()?.role === 'ADMIN')
 
 const books = ref([])
 const categories = ref([])
