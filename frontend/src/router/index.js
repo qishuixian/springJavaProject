@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../views/Login.vue'
 import Books from '../views/Books.vue'
+import BookList from '../views/BookList.vue'
 import { getToken } from '../utils'
 
 const routes = [
@@ -17,6 +18,12 @@ const routes = [
     path: '/books',
     name: 'Books',
     component: Books,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/booklist',
+    name: 'BookList',
+    component: BookList,
     meta: { requiresAuth: true }
   }
 ]

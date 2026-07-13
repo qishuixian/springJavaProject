@@ -87,3 +87,11 @@ export const deleteBook = (id) => {
     method: 'delete'
   })
 }
+
+// 获取所有分类
+export const getCategories = () => {
+  return request({
+    url: '/categories',
+    method: 'get'
+  })
+}

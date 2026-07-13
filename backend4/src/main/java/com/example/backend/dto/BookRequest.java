@@ -19,9 +19,17 @@ public class BookRequest {
     @Size(min = 1, max = 50, message = "作者长度必须在1-50之间")
     private String author;
     private String status;
-    private  Long  categoryId;
+    private Long categoryId;
      // 注意:请求对象中没有 id字段，因为新增时 ID 由数据库自动生成，前端不需要传。
     // Getter 和 Setter
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getTitle() {
         return title;
     }

@@ -5,17 +5,19 @@ public class BookResponse {
     private String title;
     private String author;
     private String status;
-    private String categoryName;  // 新增
+    private Long categoryId;    // 分类ID
+    private String categoryName;  // 分类名称
 
     // 无参构造（必须）
     public BookResponse() {}
 
     // 全参构造（方便转换）
-    public BookResponse(Long id, String title, String author, String status,String categoryName) {
+    public BookResponse(Long id, String title, String author, String status, Long categoryId, String categoryName) {
         this.id = id;
         this.title = title;
         this.author = author;
         this.status = status;
+        this.categoryId = categoryId;
         this.categoryName = categoryName;
     }
 
@@ -51,6 +53,15 @@ public class BookResponse {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
     public String getCategoryName() { return categoryName; }
     public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
 }

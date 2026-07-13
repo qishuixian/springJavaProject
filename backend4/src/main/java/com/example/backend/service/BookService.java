@@ -223,12 +223,14 @@ public class BookService {
     }
     // 实体转 Response 的私有方法（核心转换逻辑）核心转换方法，把 Book 实体的字段赋值给 BookResponse
     private BookResponse convertToResponse(Book book) {
+        Long categoryId = (book.getCategory() != null) ? book.getCategory().getId() : null;
         String categoryName = (book.getCategory() != null) ? book.getCategory().getName() : null;
         return new BookResponse(
                 book.getId(),
                 book.getTitle(),
                 book.getAuthor(),
                 book.getStatus(),
+                categoryId,
                 categoryName
         );
     }

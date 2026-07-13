@@ -6,6 +6,7 @@
           <h2>图书管理系统</h2>
           <div>
             <el-button type="primary" @click="showAddDialog">新增图书</el-button>
+            <el-button @click="goToBookList">全部列表</el-button>
             <el-button @click="handleLogout">退出登录</el-button>
           </div>
         </div>
@@ -69,6 +70,16 @@
         <el-form-item label="作者" prop="author">
           <el-input v-model="bookForm.author" placeholder="请输入作者" />
         </el-form-item>
+        <el-form-item label="分类" prop="categoryId">
+          <el-select v-model="bookForm.categoryId" placeholder="请选择分类" style="width: 100%">
+            <el-option
+              v-for="category in categories"
+              :key="category.id"
+              :label="category.name"
+              :value="category.id"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-select v-model="bookForm.status" placeholder="请选择状态">
             <el-option label="可借阅" value="可借阅" />
@@ -86,17 +97,22 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   getBooksByPage,
   searchBooksByPage,
   createBook,
   updateBook,
-  deleteBook
+  deleteBook,
+  getCategories
 } from '../api'
 import { removeToken } from '../utils'
 
+const router = useRouter()
+
 const books = ref([])
+const categories = ref([])
 const loading = ref(false)
 const dialogVisible = ref(false)
 const dialogTitle = ref('新增图书')
@@ -114,12 +130,14 @@ const pagination = reactive({
 const bookForm = reactive({
   title: '',
   author: '',
+  categoryId: null,
   status: '可借阅'
 })
 
 const bookRules = {
   title: [{ required: true, message: '请输入书名', trigger: 'blur' }],
   author: [{ required: true, message: '请输入作者', trigger: 'blur' }],
+  categoryId: [{ required: true, message: '请选择分类', trigger: 'change' }],
   status: [{ required: true, message: '请选择状态', trigger: 'change' }]
 }
 
@@ -178,25 +196,53 @@ const handleCurrentChange = (page) => {
   fetchBooks()
 }
 
+// 获取分类列表
+const fetchCategories = async () => {
+  try {
+    const res = await getCategories()
+    if (res.code === 200) {
+      categories.value = res.data
+      console.log('分类列表加载成功:', categories.value)
+    } else {
+      ElMessage.error('获取分类列表失败: ' + res.message)
+    }
+  } catch (error) {
+    console.error('获取分类列表失败:', error)
+    ElMessage.error('获取分类列表失败，请检查后端服务')
+  }
+}
+
 const showAddDialog = () => {
   dialogTitle.value = '新增图书'
   currentBookId.value = null
-  Object.assign(bookForm, { title: '', author: '', status: '可借阅' })
+  Object.assign(bookForm, { title: '', author: '', categoryId: null, status: '可借阅' })
   dialogVisible.value = true
 }
 
 const showEditDialog = (row) => {
   dialogTitle.value = '编辑图书'
   currentBookId.value = row.id
-  Object.assign(bookForm, { title: row.title, author: row.author, status: row.status })
+  Object.assign(bookForm, {
+    title: row.title,
+    author: row.author,
+    categoryId: row.categoryId || null,
+    status: row.status
+  })
   dialogVisible.value = true
 }
 
 const handleSave = async () => {
   try {
     await bookFormRef.value.validate()
+
+    // 构造请求数据
+    const requestData = { ...bookForm }
+    if (currentBookId.value) {
+      requestData.id = currentBookId.value
+    }
+
     const apiFunc = currentBookId.value ? updateBook : createBook
-    const params = currentBookId.value ? [currentBookId.value, bookForm] : [bookForm]
+    const params = currentBookId.value ? [currentBookId.value, requestData] : [requestData]
     const res = await apiFunc(...params)
 
     if (res.code === 200) {
@@ -237,12 +283,17 @@ const handleDelete = async (id) => {
   }
 }
 
+const goToBookList = () => {
+  router.push('/booklist')
+}
+
 const handleLogout = () => {
   removeToken()
-  window.location.href = '/login'
+  router.push('/login')
 }
 
 onMounted(() => {
+  fetchCategories()
   fetchBooks()
 })
 </script>
