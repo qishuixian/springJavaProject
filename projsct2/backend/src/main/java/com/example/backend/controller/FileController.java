@@ -1,6 +1,8 @@
 package com.example.backend.controller;
 
 import com.example.backend.dto.Result;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,7 @@ import java.util.UUID;
  */
 @RestController
 @RequestMapping("/api/files")
+@Tag(name = "文件管理", description = "文件上传接口")
 public class FileController {
 
     // 从配置文件中读取上传目录路径
@@ -27,6 +30,7 @@ public class FileController {
      * @param file 前端上传的文件（表单字段名为 file）
      * @return 返回可访问的图片 URL
      */
+    @Operation(summary = "上传封面图片", description = "仅管理员可操作，支持 jpg/png，最大 5MB")
     @PostMapping("/upload")
     @PreAuthorize("hasRole('ADMIN')")
     public Result<String> upload(@RequestParam("file") MultipartFile file) {

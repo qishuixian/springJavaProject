@@ -3,6 +3,8 @@ package com.example.backend.controller;
 import com.example.backend.dto.*;
 import com.example.backend.exception.BusinessException;
 import com.example.backend.service.BookService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,12 +16,14 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@Tag(name = "图书管理", description = "图书的增删改查、分页、搜索等接口")
 public class BookController {
 
     @Autowired
     private BookService bookService;
 
     // GET /api/books?categoryId=1（不加 categoryId 则返回全部）
+    @Operation(summary = "获取所有图书", description = "可选按分类ID筛选")
     @GetMapping("/books")
     //拥有 ROLE_USER或 ROLE_ADMIN的用户都能访问
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -36,6 +40,7 @@ public class BookController {
     }
 
     // GET /api/books/{id} - 根据 ID 查询
+    @Operation(summary = "根据ID查询图书")
     @GetMapping("/books/{id}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public Result<BookResponse> getBookById(@PathVariable Long id) {
@@ -48,6 +53,7 @@ public class BookController {
 
 
     // POST /api/books - 新增（仅管理员）
+    @Operation(summary = "新增图书", description = "仅管理员可操作")
     @PostMapping("/books")
     @PreAuthorize("hasRole('ADMIN')")
     public Result<BookResponse> addBook(@Validated(CreateGroup.class) @RequestBody BookRequest request) {
@@ -59,6 +65,7 @@ public class BookController {
     }
 
     // PUT /api/books/{id} - 更新（仅管理员）
+    @Operation(summary = "更新图书", description = "仅管理员可操作")
     @PutMapping("/books/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public Result<BookResponse> updateBook(@PathVariable Long id, @Validated(UpdateGroup.class) @RequestBody BookRequest request) {
@@ -70,6 +77,7 @@ public class BookController {
     }
 
     // DELETE /api/books/{id} - 删除（仅管理员）
+    @Operation(summary = "删除图书", description = "仅管理员可操作")
     @DeleteMapping("/books/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public Result<Void> deleteBook(@PathVariable Long id) {
@@ -127,6 +135,7 @@ public class BookController {
 
     // GET /api/books/page?page=0&size=5&sortField=updatedAt&sortDirection=desc
     // 默认按更新时间倒序排列（最新的在最前面）
+    @Operation(summary = "分页查询图书", description = "默认按更新时间倒序")
     @GetMapping("/books/page")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public Result<PageResponse<BookResponse>> getAllBooksWithPage(
@@ -161,6 +170,7 @@ public class BookController {
     }
 
     // GET /api/books/page/search?keyword=Spring&page=0&size=3
+    @Operation(summary = "分页搜索图书", description = "按书名关键字搜索")
     @GetMapping("/books/page/search")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public Result<PageResponse<BookResponse>> searchBooksWithPage(

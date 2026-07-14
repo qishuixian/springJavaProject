@@ -9,6 +9,8 @@ import com.example.backend.model.User;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.util.JwtUtil;
 import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "认证管理", description = "用户注册、登录、获取当前用户信息")
 public class AuthController {
 
     @Autowired
@@ -35,6 +38,7 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
     // 注册接口
+    @Operation(summary = "用户注册", description = "注册普通用户，返回 Token")
     @PostMapping("/register")
     public Result<AuthResponse> register(@Valid @RequestBody AuthRequest request) {
         // 1. 检查用户名是否已存在
@@ -60,6 +64,7 @@ public class AuthController {
     }
 
     // 登录接口
+    @Operation(summary = "用户登录", description = "用户名密码登录，返回 JWT Token")
     @PostMapping("/login")
     public Result<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
         try {
@@ -87,6 +92,7 @@ public class AuthController {
         }
     }
     // 测试用：注册管理员（生产环境不应开放）
+    @Operation(summary = "注册管理员", description = "测试用，注册管理员角色账号")
     @PostMapping("/register-admin")
     public Result<AuthResponse> registerAdmin(@Valid @RequestBody AuthRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
@@ -104,6 +110,7 @@ public class AuthController {
     }
 
     // 获取当前登录用户信息
+    @Operation(summary = "获取当前用户信息", description = "需要 Token 认证")
     @GetMapping("/me")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public Result<AuthResponse> getCurrentUser(@AuthenticationPrincipal User user) {

@@ -66,7 +66,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         // 3. 放行上传的静态资源（图片访问）
                         .requestMatchers("/uploads/**").permitAll()
-                        // 4. 其他所有请求都需要认证
+                        // 4. 放行 Swagger/OpenAPI 文档相关路径
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                        // 5. 其他所有请求都需要认证
                         .anyRequest().authenticated()
                 )
 
