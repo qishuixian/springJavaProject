@@ -128,13 +128,13 @@
 
 | Day | 任务 | 产出 |
 |-----|------|------|
-| Day 1 | 前端登录页面 → 调用后端登录接口 | 登录功能完成 |
-| Day 2 | 前端图书列表页 → 调用 `GET /api/books` | 列表展示 |
-| Day 3 | 前端新增/编辑图书表单 | 表单提交功能 |
-| Day 4 | 前端删除图书功能 | 删除确认对话框 |
-| Day 5 | 处理 CORS 跨域问题 | 跨域配置完成 |
-| Day 6 | 修复联调 bug（字段名、数据类型等） | bug 修复清单 |
-| Day 7 | 复习总结 | 博客：《Vue3 + Spring Boot 前后端联调实录》 |
+| Day 1 | 前后端联调：完成登录/注册功能的前后端对接，修复遗留的跨域或 Token 问题 | 前端登录页正常工作，能注册、登录并跳转 |
+| Day 2 | 前端书籍管理页面：实现书籍列表展示、新增、编辑、删除功能，与后端 API 联调 | BookList.vue、BookForm.vue，完整 CRUD 操作 |
+| Day 3 | ​前端权限控制：根据用户角色（USER/ADMIN）动态显示/隐藏操作按钮（如仅管理员可见删除按钮） | 前端权限指令或 v-if 逻辑 |
+| Day 4 |后端文件上传：实现书籍封面上传功能，返回图片 URL，前端展示 | FileController.java、上传配置、前端图片预览 |
+| Day 5 | 集成 Swagger/OpenAPI：自动生成 API 文档，方便前后端协作测试 | springdoc-openapi依赖，访问 /swagger-ui.html |
+| Day 6 | 项目打包与部署：后端打成 jar 包，前端构建 dist，使用 Nginx 反向代理部署 | backend.jar、前端 dist、nginx 配置 |
+| Day 7 | 复习总结| 博客《Spring Boot 第五周：前后端联调与项目部署实战》  |
 
 **核心知识点**：
 - CORS 跨域解决方案
@@ -295,7 +295,7 @@ MIT License
 
 ## 👨‍💻 作者
 
-[@your-github-username](https://github.com/your-github-username)
+[一位正在转型全栈的前端工程师](https://blog.csdn.net/qishuixian)
 
 ---
 
