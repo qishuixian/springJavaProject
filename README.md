@@ -134,7 +134,7 @@
 | Day 4 |后端文件上传：实现书籍封面上传功能，返回图片 URL，前端展示 | FileController.java、上传配置、前端图片预览 |
 | Day 5 | 集成 Swagger/OpenAPI：自动生成 API 文档，方便前后端协作测试 | springdoc-openapi依赖，访问 /swagger-ui.html |
 | Day 6 | 项目打包与部署：后端打成 jar 包，前端构建 dist，使用 Nginx 反向代理部署 | backend.jar、前端 dist、nginx 配置 |
-| Day 7 | 复习总结| 博客《Spring Boot 第五周：前后端联调与项目部署实战》  |
+| Day 7 | 复习总结| 博客：[《Spring Boot 第五周：前后端联调与项目部署实战》](https://blog.csdn.net/qishuixian/article/details/162872003) |
 
 **核心知识点**：
 - CORS 跨域解决方案（`@CrossOrigin` 注解配置）
