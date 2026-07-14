@@ -137,11 +137,14 @@
 | Day 7 | 复习总结| 博客《Spring Boot 第五周：前后端联调与项目部署实战》  |
 
 **核心知识点**：
-- CORS 跨域解决方案
-- Axios 请求封装
-- Token 存储与携带
-- 前后端接口联调技巧
-- 常见 bug 排查
+- CORS 跨域解决方案（`@CrossOrigin` 注解配置）
+- Axios 请求封装（拦截器、Token 自动携带、统一错误处理）
+- JWT Token 认证流程（登录、注册、携带 Bearer Token）
+- 前端路由守卫与权限控制（v-if 根据角色动态显示按钮）
+- 文件上传功能（MultipartFile、封面图片上传与展示）
+- Swagger/OpenAPI 集成（springdoc-openapi、API 文档自动生成）
+- 环境变量管理（Vite 环境变量、开发/生产环境 baseURL 配置）
+- 前后端接口联调技巧与常见 bug 排查
 
 ---
 
